@@ -1,0 +1,260 @@
+{
+	"info": {
+		"_postman_id": "cc62c30f-1447-454d-a5fa-f84f381c8706",
+		"name": "IDP",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "15769956"
+	},
+	"item": [
+		{
+			"name": "Add book",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "PGUSER",
+						"value": "admin",
+						"type": "text"
+					},
+					{
+						"key": "PGPASSWORD",
+						"value": "admin",
+						"type": "text"
+					},
+					{
+						"key": "PGDATABASE",
+						"value": "books",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Harry Potter and the Prisoner of Azkaban\",\n    \"author\": \"J.K. Rowling\",\n    \"genre\": \"Fantasy\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/books",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"books"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get book",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/books",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"books"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get book by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/books/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"books",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"edi-test\",\n    \"password\": \"1234\",\n    \"email\": \"edi-test@upb.ro\",\n    \"university\": \"UPB\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/api/auth/register",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"edi-test@upb.ro\",\n    \"password\": \"1234\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/api/auth/login",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Change password",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"edi-test@upb.ro\",\n    \"oldPassword\": \"123\",\n    \"newPassword\": \"248\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/api/auth/change-password",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"change-password"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add user in db",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"db\",\n    \"password\": \"12\",\n    \"email\": \"db@upb.ro\",\n    \"role\": \"ADMIN\",\n    \"firstName\": \"\",\n    \"lastName\": \"\",\n    \"birthDate\": \"07-07-2023\",\n    \"university\": \"UPB\",\n    \"imageString\": \"\",\n    \"profilePic\": \"\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DB_URL}}/api/db/create/user",
+					"host": [
+						"{{DB_URL}}"
+					],
+					"path": [
+						"api",
+						"db",
+						"create",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user from db",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{DB_URL}}/api/db/get/user/id/1",
+					"host": [
+						"{{DB_URL}}"
+					],
+					"path": [
+						"api",
+						"db",
+						"get",
+						"user",
+						"id",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update user in db",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 1,\n    \"username\": \"edi-db\",\n    \"role\": \"ADMIN\",\n    \"firstName\": \"\",\n    \"lastName\": \"\",\n    \"birthDate\": \"2023-07-06T21:00:00.000Z\",\n    \"email\": \"db@upb.ro\",\n    \"university\": \"UPB\",\n    \"imageString\": \"\",\n    \"profilePic\": \"\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DB_URL}}/api/db/update/user",
+					"host": [
+						"{{DB_URL}}"
+					],
+					"path": [
+						"api",
+						"db",
+						"update",
+						"user"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
