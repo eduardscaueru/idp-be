@@ -1,0 +1,3 @@
+db_url=http://localhost:8081/api
+group_db_url=http://localhost:8081/api/group/
+post_db_url=http://localhost:8081/api/post/
