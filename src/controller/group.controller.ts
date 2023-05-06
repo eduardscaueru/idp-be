@@ -14,7 +14,7 @@ class GroupController {
 
       let groups;
       await fetch(properties.get("group_db_url") + 'find', {
-        method: 'GET',
+        method: 'POST',
         body: JSON.stringify({select: ["id", "name", "description"]}),
         headers: {
           'Content-type': 'application/json'
@@ -118,7 +118,7 @@ class GroupController {
 
       let groups;
       await fetch(properties.get("group_db_url") + 'find', {
-        method: 'GET',
+        method: 'POST',
         body: JSON.stringify({relations: ["users"]}),
         headers: {
           'Content-type': 'application/json'
@@ -149,15 +149,15 @@ class GroupController {
       for (let g of groupsWithoutUser) {
         try {
           await fetch(properties.get("post_db_url") + 'getPhoto', {
-            method: 'GET',
+            method: 'POST',
             body: g.image,
             headers: {
               'Content-type': 'application/json'
             }}).then(response => {
-              return response.body
+              return response.json()
           }).then(data => {
               console.log(data)
-              g.imageString = data
+              g.imageString = data.imageString
           }).catch(error => {
             console.error('Error:', error);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
@@ -178,11 +178,12 @@ class GroupController {
     try {
       let user; //await getRepository(User).findOneOrFail({ where: { id }, relations: ["groups"] });
       await fetch(properties.get("user_db_url") + 'findOneOrFail', {
-        method: 'GET',
+        method: 'POST',
         body: JSON.stringify({where: {id}, relations: ["groups"]}),
         headers: {
           'Content-type': 'application/json'
         }}).then(response => {
+          console.log(response)
           return response.json()
       }).then(data => {
           console.log(data)
@@ -193,17 +194,18 @@ class GroupController {
       });
 
       for (let g of user.groups) {
+        console.log(g.image);
         try {
           await fetch(properties.get("post_db_url") + 'getPhoto', {
-            method: 'GET',
-            body: g.image,
+            method: 'POST',
+            body: JSON.stringify({image: g.image}),
             headers: {
               'Content-type': 'application/json'
             }}).then(response => {
-              return response.body
+              return response.json()
           }).then(data => {
               console.log(data)
-              g.imageString = data
+              g.imageString = data.imageString
           }).catch(error => {
             console.error('Error:', error);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
@@ -227,7 +229,7 @@ class GroupController {
     try {
       let group;
       await fetch(properties.get("group_db_url") + 'findOneOrFail', {
-        method: 'GET',
+        method: 'POST',
         body: JSON.stringify({where: {id: groupId }, relations: ["pendingUsers", "users"]}),
         headers: {
           'Content-type': 'application/json'
@@ -243,7 +245,7 @@ class GroupController {
 
       let user;
       await fetch(properties.get("user_db_url") + 'findOneOrFail', {
-        method: 'GET',
+        method: 'POST',
         body: JSON.stringify({where: {id: userId }, relations: ["pendingGroups", "groups"]}),
         headers: {
           'Content-type': 'application/json'
@@ -310,7 +312,7 @@ class GroupController {
     try {
         let posts;
         await fetch(properties.get("group_db_url") + 'getPosts', {
-          method: 'GET',
+          method: 'POST',
           body: JSON.stringify({groupId: groupId, userId: userId}),
           headers: {
             'Content-type': 'application/json'
