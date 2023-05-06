@@ -1,6 +1,7 @@
 import {Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import { User } from "./user";
 import {Post} from "./post";
+import {classToPlain, Exclude} from "class-transformer";
 
 @Entity()
 export class Group {
@@ -33,5 +34,9 @@ export class Group {
   moderators!: User[];
 
   @OneToMany(() => Post, post => post.group)
-  posts!: Post[]
+  posts!: Post[];
+
+  toJSON() {
+    return classToPlain(this);
+  }
 }
