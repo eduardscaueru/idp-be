@@ -3,6 +3,7 @@ import {Group} from "../entity/group";
 import {validate} from "class-validator";
 import * as HttpStatus from 'http-status';
 import {User} from "../entity/user";
+import jwt_decode from 'jwt-decode';
 
 var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('config/properties');
@@ -14,7 +15,7 @@ class GroupController {
 
       let groups;
       await fetch(properties.get("group_db_url") + 'find', {
-        method: 'GET',
+        method: 'POST',
         body: JSON.stringify({select: ["id", "name", "description"]}),
         headers: {
           'Content-type': 'application/json'
@@ -22,7 +23,7 @@ class GroupController {
           return response.json()
       }).then(data => {
           console.log(data)
-          groups = JSON.parse(data)
+          groups = data;
       }).catch(error => {
         console.error('Error:', error);
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
@@ -110,7 +111,7 @@ class GroupController {
           return response.json()
       }).then(data => {
           user = User.from(data);
-          console.log(data)
+          console.log(data);
       }).catch(error => {
         console.error('Error:', error);
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
@@ -118,7 +119,7 @@ class GroupController {
 
       let groups;
       await fetch(properties.get("group_db_url") + 'find', {
-        method: 'GET',
+        method: 'POST',
         body: JSON.stringify({relations: ["users"]}),
         headers: {
           'Content-type': 'application/json'
@@ -126,8 +127,8 @@ class GroupController {
           code = response.status;
           return response.json()
       }).then(data => {
-          console.log(data)
-          groups = JSON.parse(data)
+          console.log(data);
+          groups = data;
       }).catch(error => {
         console.error('Error:', error);
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
@@ -146,18 +147,19 @@ class GroupController {
           groupsWithoutUser.push(g);
         }
       }
+
       for (let g of groupsWithoutUser) {
         try {
           await fetch(properties.get("post_db_url") + 'getPhoto', {
-            method: 'GET',
-            body: g.image,
+            method: 'POST',
+            body: JSON.stringify({image: g.image}),
             headers: {
               'Content-type': 'application/json'
             }}).then(response => {
-              return response.body
+              return response.json()
           }).then(data => {
-              console.log(data)
-              g.imageString = data
+              console.log(data);
+              g.imageString = data.imageString;
           }).catch(error => {
             console.error('Error:', error);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
@@ -167,7 +169,7 @@ class GroupController {
           console.log(e);
         }
       }
-      res.status(HttpStatus.OK).send({body: groupsWithoutUser});
+      res.status(HttpStatus.OK).send(groupsWithoutUser);
     } catch (e) {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
     }
@@ -178,11 +180,12 @@ class GroupController {
     try {
       let user; //await getRepository(User).findOneOrFail({ where: { id }, relations: ["groups"] });
       await fetch(properties.get("user_db_url") + 'findOneOrFail', {
-        method: 'GET',
+        method: 'POST',
         body: JSON.stringify({where: {id}, relations: ["groups"]}),
         headers: {
           'Content-type': 'application/json'
         }}).then(response => {
+          console.log(response)
           return response.json()
       }).then(data => {
           console.log(data)
@@ -195,15 +198,14 @@ class GroupController {
       for (let g of user.groups) {
         try {
           await fetch(properties.get("post_db_url") + 'getPhoto', {
-            method: 'GET',
-            body: g.image,
+            method: 'POST',
+            body: JSON.stringify({image: g.image}),
             headers: {
               'Content-type': 'application/json'
             }}).then(response => {
-              return response.body
+              return response.json()
           }).then(data => {
-              console.log(data)
-              g.imageString = data
+              g.imageString = data.imageString
           }).catch(error => {
             console.error('Error:', error);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
@@ -221,50 +223,45 @@ class GroupController {
 
   static groupJoin = async (req: Request, res: Response) => {
     let groupId = req.params.groupId;
-    let userId = req.body.userId;
-    let rep = req.body.response;
+    let token: any = jwt_decode(req.headers.authorization?.slice(7)!);
+    let userId = token.userId;
 
     try {
-      let group;
+      let group: Group = new Group();
       await fetch(properties.get("group_db_url") + 'findOneOrFail', {
-        method: 'GET',
-        body: JSON.stringify({where: {id: groupId }, relations: ["pendingUsers", "users"]}),
+        method: 'POST',
+        body: JSON.stringify({where: {id: groupId }, relations: ["users"]}),
         headers: {
           'Content-type': 'application/json'
         }}).then(response => {
           return response.json()
       }).then(data => {
           console.log(data)
-          group = Group.from(data)
+          group = Group.from(data);
       }).catch(error => {
         console.error('Error:', error);
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
       });
-
-      let user;
+      
+      let user: User = new User();
       await fetch(properties.get("user_db_url") + 'findOneOrFail', {
-        method: 'GET',
-        body: JSON.stringify({where: {id: userId }, relations: ["pendingGroups", "groups"]}),
+        method: 'POST',
+        body: JSON.stringify({where: {id: userId }, relations: ["groups"]}),
         headers: {
           'Content-type': 'application/json'
         }}).then(response => {
-          return response.json()
+          return response.json();
       }).then(data => {
-          console.log(data)
-          user = User.from(data)
+          console.log(data);
+          user = User.from(data);
       }).catch(error => {
         console.error('Error:', error);
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
       });
 
-      let response;
-      if (rep) {
-          group.users.push(user);
-          user.groups.push(group);
-          response = {success: "Approved!"}
-      } else {
-          response = {error: "Rejected!"}
-      }
+      group.users.push(User.from(user.toJSON()));
+      user.groups.push(Group.from(group.toJSON()));
+      let response = {success: "Approved!"};
       
       // Update user
       await fetch(properties.get("user_db_url") + 'update', {
@@ -275,7 +272,7 @@ class GroupController {
         }}).then(response => {
           return response.json()
       }).then(data => {
-          console.log(data)
+          console.log(data);
       }).catch(error => {
         console.error('Error:', error);
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
@@ -287,9 +284,9 @@ class GroupController {
         headers: {
           'Content-type': 'application/json'
         }}).then(response => {
-          return response.json()
+          return response.json();
       }).then(data => {
-          console.log(data)
+          console.log(data);
       }).catch(error => {
         console.error('Error:', error);
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
@@ -305,12 +302,13 @@ class GroupController {
     let lastIndex = req.params.lastIndex;
   
     const groupId = req.params.groupId;
-    const userId = res.locals.jwtPayload.userId;
+    let token: any = jwt_decode(req.headers.authorization?.slice(7)!);
+    const userId = token.userId;
   
     try {
         let posts;
         await fetch(properties.get("group_db_url") + 'getPosts', {
-          method: 'GET',
+          method: 'POST',
           body: JSON.stringify({groupId: groupId, userId: userId}),
           headers: {
             'Content-type': 'application/json'
@@ -318,7 +316,7 @@ class GroupController {
             return response.json()
         }).then(data => {
             console.log(data)
-            posts = JSON.parse(data)
+            posts = data;
         }).catch(error => {
           console.error('Error:', error);
           res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();

@@ -18,7 +18,7 @@ class PostController {
 
         try {
             await fetch(properties.get("post_db_url") + 'createPost', {
-                method: 'GET',
+                method: 'POST',
                 body: JSON.stringify({title: title, body: body, userId: userId, groupId: groupId}),
                 headers: {
                   'Content-type': 'application/json'
@@ -45,7 +45,7 @@ class PostController {
         try {
             let user;
             await fetch(properties.get("user_db_url") + 'findOneOrFail', {
-                method: 'GET',
+                method: 'POST',
                 body: JSON.stringify({ where: { id: userId }, relations: ["likedPosts"] }),
                 headers: {
                 'Content-type': 'application/json'
@@ -61,7 +61,7 @@ class PostController {
 
             let post;
             await fetch(properties.get("post_db_url") + 'findOneOrFail', {
-                method: 'GET',
+                method: 'POST',
                 body: JSON.stringify({ where: { id: postId }, relations: ["userLikes"] }),
                 headers: {
                 'Content-type': 'application/json'
@@ -134,7 +134,7 @@ class PostController {
         try {
             let user;
             await fetch(properties.get("user_db_url") + 'findOneOrFail', {
-                method: 'GET',
+                method: 'POST',
                 body: JSON.stringify({ where: { id: userId }, relations: ["likedPosts"] }),
                 headers: {
                 'Content-type': 'application/json'
@@ -150,7 +150,7 @@ class PostController {
 
             let post;
             await fetch(properties.get("post_db_url") + 'findOneOrFail', {
-                method: 'GET',
+                method: 'POST',
                 body: JSON.stringify({ where: { id: postId }, relations: ["userLikes"] }),
                 headers: {
                 'Content-type': 'application/json'
