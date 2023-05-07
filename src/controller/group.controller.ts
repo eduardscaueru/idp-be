@@ -309,13 +309,13 @@ class GroupController {
         let posts;
         await fetch(properties.get("group_db_url") + 'getPosts', {
           method: 'POST',
-          body: JSON.stringify({groupId: groupId, userId: userId}),
+          body: JSON.stringify({groupId: groupId, userId: userId, lastIndex: lastIndex}),
           headers: {
             'Content-type': 'application/json'
           }}).then(response => {
             return response.json()
         }).then(data => {
-            console.log(data)
+            console.log("Posts\n" + data);
             posts = data;
         }).catch(error => {
           console.error('Error:', error);

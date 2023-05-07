@@ -4,6 +4,7 @@ import {Post} from "../entity/post";
 import {User} from "../entity/user";
 import {Group} from "../entity/group";
 import {PostFile} from "../entity/postFile";
+import jwt_decode from 'jwt-decode';
 
 var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('config/properties');
@@ -39,7 +40,8 @@ class PostController {
     }
 
     static likePost = async (req: Request, res: Response) => {
-        const userId = res.locals.jwtPayload.userId;
+        let token: any = jwt_decode(req.headers.authorization?.slice(7)!);
+        let userId = token.userId;
         const postId = req.params.postId;
 
         try {
@@ -52,8 +54,8 @@ class PostController {
                 }}).then(response => {
                 return response.json()
             }).then(data => {
-                console.log(data)
-                user = User.from(data)
+                console.log(data);
+                user = User.from(data);
             }).catch(error => {
                 console.error('Error:', error);
                 res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
@@ -68,8 +70,8 @@ class PostController {
                 }}).then(response => {
                 return response.json()
             }).then(data => {
-                console.log(data)
-                post = Post.from(data)
+                console.log(data);
+                post = Post.from(data);
             }).catch(error => {
                 console.error('Error:', error);
                 res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
@@ -88,8 +90,8 @@ class PostController {
                 return;
             }
 
-            user.likedPosts.push(post);
-            post.userLikes.push(user);
+            user.likedPosts.push(Post.from(post.toJSON()));
+            post.userLikes.push(User.from(user.toJSON()));
 
             // Update user
             await fetch(properties.get("user_db_url") + 'update', {
@@ -128,7 +130,8 @@ class PostController {
     }
 
     static unlikePost = async (req: Request, res: Response) => {
-        const userId = res.locals.jwtPayload.userId;
+        let token: any = jwt_decode(req.headers.authorization?.slice(7)!);
+        let userId = token.userId;
         const postId = req.params.postId;
 
         try {
@@ -141,8 +144,8 @@ class PostController {
                 }}).then(response => {
                 return response.json()
             }).then(data => {
-                console.log(data)
-                user = User.from(data)
+                console.log(data);
+                user = User.from(data);
             }).catch(error => {
                 console.error('Error:', error);
                 res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
@@ -154,11 +157,12 @@ class PostController {
                 body: JSON.stringify({ where: { id: postId }, relations: ["userLikes"] }),
                 headers: {
                 'Content-type': 'application/json'
-                }}).then(response => {
+            }}).then(response => {
+                console.log(response);
                 return response.json()
             }).then(data => {
-                console.log(data)
-                post = Post.from(data)
+                console.log(data);
+                post = Post.from(data);
             }).catch(error => {
                 console.error('Error:', error);
                 res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
