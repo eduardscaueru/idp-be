@@ -13,8 +13,7 @@ const fetch = require("node-fetch");
 
 class PostController {
     static createPost = async (req: Request, res: Response) => {
-        let {title, body} = req.body;
-        let userId = res.locals.jwtPayload.userId;
+        let {title, body, userId} = req.body;
         let groupId = req.params.groupId;
 
         try {
