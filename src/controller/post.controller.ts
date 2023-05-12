@@ -2,8 +2,6 @@ import {Request, Response} from "express";
 import * as HttpStatus from "http-status";
 import {Post} from "../entity/post";
 import {User} from "../entity/user";
-import {Group} from "../entity/group";
-import {PostFile} from "../entity/postFile";
 import jwt_decode from 'jwt-decode';
 
 var PropertiesReader = require('properties-reader');
@@ -13,8 +11,7 @@ const fetch = require("node-fetch");
 
 class PostController {
     static createPost = async (req: Request, res: Response) => {
-        let {title, body} = req.body;
-        let userId = res.locals.jwtPayload.userId;
+        let {title, body, userId} = req.body;
         let groupId = req.params.groupId;
 
         try {
