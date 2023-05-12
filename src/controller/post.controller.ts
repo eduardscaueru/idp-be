@@ -2,8 +2,6 @@ import {Request, Response} from "express";
 import * as HttpStatus from "http-status";
 import {Post} from "../entity/post";
 import {User} from "../entity/user";
-import {Group} from "../entity/group";
-import {PostFile} from "../entity/postFile";
 import jwt_decode from 'jwt-decode';
 
 var PropertiesReader = require('properties-reader');
