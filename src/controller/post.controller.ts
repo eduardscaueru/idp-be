@@ -11,8 +11,10 @@ const fetch = require("node-fetch");
 
 class PostController {
     static createPost = async (req: Request, res: Response) => {
-        let {title, body, userId} = req.body;
+        let {title, body} = req.body;
         let groupId = req.params.groupId;
+        let token: any = jwt_decode(req.headers.authorization?.slice(7)!);
+        let userId = token.userId;
 
         try {
             await fetch(properties.get("post_db_url") + 'createPost', {
