@@ -1,4 +1,4 @@
-db_url=http://localhost:8081/api
-group_db_url=http://localhost:8081/api/group/
-post_db_url=http://localhost:8081/api/post/
-user_db_url=http://localhost:8081/api/user/
+db_url=http://idp-db:8081/api
+group_db_url=http://idp-db:8081/api/group/
+post_db_url=http://idp-db:8081/api/post/
+user_db_url=http://idp-db:8081/api/user/
