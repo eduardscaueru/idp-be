@@ -6,5 +6,6 @@ const routes = Router();
 
 routes.use("/group", group);
 routes.use("/post", post);
+routes.use("/user", post);
 
 export default routes;
